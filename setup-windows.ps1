@@ -45,6 +45,20 @@ Invoke-WebRequest -Uri $WINGET_URL -OutFile "Setup.msix" -UseBasicParsing
 Add-AppxPackage -Path "Setup.msix"
 Remove-Item "Setup.msix"
 
+# Install Apps
+winget install -e --id Microsoft.PowerToys
+winget install -e --id Google.Chrome
+winget install -e --id JetBrains.Toolbox
+winget install -e --id Spotify.Spotify
+winget install -e --id Obsidian.Obsidian
+winget install -e --id Discord.Discord
+winget install -e --id TorProject.TorBrowser
+winget install -e --id Figma.Figma
+winget install -e --id Google.Drive
+winget install -e --id calibre.calibre
+winget install -e --id SublimeHQ.SublimeText.4
+winget install -e --id Docker.DockerDesktop
+
 ## Install Windows Subsystem for Linux
 wsl --install Ubuntu
 wsl --set-default-version 2
