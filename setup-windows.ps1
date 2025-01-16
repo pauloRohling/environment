@@ -147,4 +147,4 @@ for ($i = 3; $i -gt 0; $i--) {
 }
 
 # Logoff and login
-LOGOFF
+Write-Output "Done! Please log off and log back in to apply the changes."
