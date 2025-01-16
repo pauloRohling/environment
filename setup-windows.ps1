@@ -50,12 +50,19 @@ function Set-Preferences
     Get-Service dmwappushservice | Set-Service -StartupType Disabled
     Set-ItemProperty -Path $DATA_COLLECTION_PATH -Name "AllowTelemetry" -Type DWord -Value 0
 
+    # Set the lock screen image
     $Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP'
     if (!(Test-Path -Path $Key))
     {
         New-Item -Path $Key -Force | Out-Null
     }
     Set-ItemProperty -Path $Key -Name LockScreenImagePath -value "./wallpaper.png"
+
+    # Auto hide the taskbar
+    $p = "HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
+    $v = (Get-ItemProperty -Path $p).Settings
+    $v[8] = 3
+    Set-ItemProperty -Path $p -Name Settings -Value $v
 }
 
 # Restart Windows Explorer to apply the changes
