@@ -53,7 +53,8 @@ function Set-Preferences
     Set-ItemProperty -Path $DATA_COLLECTION_PATH -Name "AllowTelemetry" -Type DWord -Value 0
 
     $Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP'
-    if (!(Test-Path -Path $Key)) {
+    if (!(Test-Path -Path $Key))
+    {
         New-Item -Path $Key -Force | Out-Null
     }
     Set-ItemProperty -Path $Key -Name LockScreenImagePath -value "./wallpaper.png"
@@ -66,11 +67,30 @@ function Restart-Explorer
     Start-Process explorer
 }
 
+## Install WinGet
 function Install-WinGet
 {
     Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile winget.msixbundle
     Add-AppxPackage winget.msixbundle
     Remove-Item winget.msixbundle
+}
+
+# Install Apps
+function Install-Apps
+{
+    winget install -e --id Microsoft.PowerToys --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Google.Chrome --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Docker.DockerDesktop --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id JetBrains.Toolbox --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Spotify.Spotify --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Google.Drive --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Obsidian.Obsidian --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Discord.Discord --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id TorProject.TorBrowser --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Figma.Figma --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id 7zip.7zip --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id calibre.calibre --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id SublimeHQ.SublimeText.4 --silent --accept-source-agreements --accept-package-agreements
 }
 
 # Interrupt the script if system is not activated
@@ -111,23 +131,11 @@ catch
 wsl --set-default-version 2
 
 # Install Apps
-winget install -e --id Microsoft.PowerToys --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id Google.Chrome --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id Docker.DockerDesktop --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id JetBrains.Toolbox --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id Spotify.Spotify --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id Google.Drive --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id Obsidian.Obsidian --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id Discord.Discord --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id TorProject.TorBrowser --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id Figma.Figma --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id 7zip.7zip --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id calibre.calibre --silent --accept-source-agreements --accept-package-agreements
-winget install -e --id SublimeHQ.SublimeText.4 --silent --accept-source-agreements --accept-package-agreements
+Install-Apps
 
 Write-Output "Finished the setup process. Logging off to apply the changes..."
 Start-Sleep -Seconds 1
-for (($i = 3); $i -gt 0; $i--) {
+for ($i = 3; $i -gt 0; $i--) {
     Write-Output "$i"
     Start-Sleep -Seconds 1
 }
