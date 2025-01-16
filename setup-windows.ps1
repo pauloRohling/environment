@@ -1,70 +1,136 @@
 #Requires -RunAsAdministrator
 
-# Removes the restrictions on PowerShell execution
+# Remove the restrictions on PowerShell execution
 Set-ExecutionPolicy Unrestricted
 
-# Activates Windows
-Invoke-RestMethod https://get.activated.win | Invoke-Expression
+# Check if the license is activated
+function Get-IsActivated
+{
+    $License = Get-CimInstance SoftwareLicensingProduct -Filter "Name like 'Windows%'" | Where-Object { $_.PartialProductKey }
+    return $License.LicenseStatus -eq 1
+}
 
-# Sets the system and app theme to Dark
-$THEME_PATH = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-Set-ItemProperty -Path $THEME_PATH -Name "SystemUsesLightTheme" -Value 0
-Set-ItemProperty -Path $THEME_PATH -Name "AppsUseLightTheme" -Value 0
+# Set the system preferences
+function Set-Preferences
+{
+    $ADVANCED_PATH = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    $COLORS_PATH = "HKCU:\Control Panel\Colors"
+    $DESKTOP_PATH = "HKCU:\Control Panel\Desktop"
+    $PERSONALIZATION_PATH = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
+    $GAMEDVR_PATH = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR"
+    $SEARCH_PATH = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search"
+    $TASKBAND_PATH = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband"
+    $TASKBAR_PATH = "$env:APPDATA\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*"
+    $THEME_PATH = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    $CDM_PATH = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+    $DATA_COLLECTION_PATH = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
 
-# Sets the desktop background to a solid color
-$DESKTOP_PATH = 'HKCU:\Control Panel\Desktop'
-$COLORS_PATH = 'HKCU:\Control Panel\Colors'
-Set-ItemProperty -Path $DESKTOP_PATH -Name 'WallPaper' -Value ''
-Set-ItemProperty -Path $COLORS_PATH -Name 'Background' -Value '0 0 0'
+    Set-ItemProperty -Path $THEME_PATH -Name "SystemUsesLightTheme" -Value 0 # Set the system theme to Dark
+    Set-ItemProperty -Path $THEME_PATH -Name "AppsUseLightTheme" -Value 0 # Set the app theme to Dark
+    Set-ItemProperty -Path $PERSONALIZATION_PATH -Name 'LockScreenImage' -Value '0 0 0' # Set the lock screen background to a solid color
+    Set-ItemProperty -Path $DESKTOP_PATH -Name 'WallPaper' -Value '' # Set the desktop background to a solid color
+    Set-ItemProperty -Path $COLORS_PATH -Name 'Background' -Value '0 0 0' # Set the desktop background to a solid color
+    Set-ItemProperty -Path $ADVANCED_PATH -Name 'HideIcons' -Value 1 # Hide Desktop Icons
+    Set-ItemProperty -Path $ADVANCED_PATH -Name 'ShowTaskViewButton' -Type 'DWord' -Value 0 # Hide Task View
+    Set-ItemProperty -Path $ADVANCED_PATH -Name 'TaskbarAl' -Type 'DWord' -Value 0 # Align Taskbar to the left
+    Set-ItemProperty -Path $SEARCH_PATH -Name 'SearchBoxTaskbarMode' -Value 0 -Type DWord -Force # Hide Search bar
+    Remove-Item -Path $TASKBAR_PATH -Force -Recurse -ErrorAction SilentlyContinue # Unpin all taskbar icons
+    Remove-Item -Path $TASKBAND_PATH -Force -Recurse -ErrorAction SilentlyContinue # Unpin all taskbar icons
+    Set-ItemProperty -Path $GAMEDVR_PATH -Name 'AppCaptureEnabled' -Value 0 # Disable Game Overlays
+    Set-ItemProperty -Path $ADVANCED_PATH -Name 'Hidden' -Value 1 # Show hidden files and folders
+    Set-ItemProperty -Path $ADVANCED_PATH -Name 'HideFileExt' -Value 1 # Don't hide file extensions
+    Set-ItemProperty -Path $CDM_PATH -Name 'ContentDeliveryAllowed' -Value 1
+    Set-ItemProperty -Path $CDM_PATH -Name 'RotatingLockScreenEnabled' -Value 1
+    Set-ItemProperty -Path $CDM_PATH -Name 'RotatingLockScreenOverlayEnabled' -Value 0
+    Set-ItemProperty -Path $CDM_PATH -Name 'SubscribedContent-338388Enabled' -Value 0
+    Set-ItemProperty -Path $CDM_PATH -Name 'SubscribedContent-338389Enabled' -Value 0
+    Set-ItemProperty -Path $CDM_PATH -Name 'SubscribedContent-88000326Enabled' -Value 0
+    powercfg /change monitor-timeout-ac 0 # Disable monitor timeout
 
-# Hides the icons in the desktop
-$ADVANCED_PATH = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
-Set-ItemProperty -Path $ADVANCED_PATH -Name 'HideIcons' -Value 1
+    # Disable telemetry
+    Get-Service DiagTrack | Set-Service -StartupType Disabled
+    Get-Service dmwappushservice | Set-Service -StartupType Disabled
+    Set-ItemProperty -Path $DATA_COLLECTION_PATH -Name "AllowTelemetry" -Type DWord -Value 0
 
-# Hides the Task View button
-Set-ItemProperty -Path $ADVANCED_PATH -Name 'ShowTaskViewButton' -Type 'DWord' -Value 0
+    $Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP'
+    if (!(Test-Path -Path $Key)) {
+        New-Item -Path $Key -Force | Out-Null
+    }
+    Set-ItemProperty -Path $Key -Name LockScreenImagePath -value "./wallpaper.png"
+}
 
-# Aligns the taskbar icons to the left
-Set-ItemProperty -Path $ADVANCED_PATH -Name 'TaskbarAl' -Type 'DWord' -Value 0
+# Restart Windows Explorer to apply the changes
+function Restart-Explorer
+{
+    Stop-Process -processName: explorer
+    Start-Process explorer
+}
 
-# Unpin all taskbar icons
-Remove-Item -Path "$env:APPDATA\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse -ErrorAction SilentlyContinue
-Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Force -Recurse -ErrorAction SilentlyContinue
+function Install-WinGet
+{
+    Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile winget.msixbundle
+    Add-AppxPackage winget.msixbundle
+    Remove-Item winget.msixbundle
+}
 
-# Hides the search box in the taskbar
-$SEARCH_PATH = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search'
-Set-ItemProperty -Path $SEARCH_PATH -Name SearchBoxTaskbarMode -Value 0 -Type DWord -Force
+# Interrupt the script if system is not activated
+if (-not (Get-IsActivated))
+{
+    throw "Windows license is not activated. Please activate it before continuing."
+}
+
+Write-Output "Starting the setup process..."
+Set-Preferences
+Restart-Explorer
 
 # Install WinGet
-$WINGET_URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-$WINGET_URL = (Invoke-WebRequest -Uri $WINGET_URL).Content | ConvertFrom-Json |
-        Select-Object -ExpandProperty "assets" |
-        Where-Object "browser_download_url" -Match '.msixbundle' |
-        Select-Object -ExpandProperty "browser_download_url"
-Invoke-WebRequest -Uri $WINGET_URL -OutFile "Setup.msix" -UseBasicParsing
-Add-AppxPackage -Path "Setup.msix"
-Remove-Item "Setup.msix"
-
-# Install Apps
-winget install -e --id Microsoft.PowerToys
-winget install -e --id Google.Chrome
-winget install -e --id JetBrains.Toolbox
-winget install -e --id Spotify.Spotify
-winget install -e --id Obsidian.Obsidian
-winget install -e --id Discord.Discord
-winget install -e --id TorProject.TorBrowser
-winget install -e --id Figma.Figma
-winget install -e --id Google.Drive
-winget install -e --id calibre.calibre
-winget install -e --id SublimeHQ.SublimeText.4
-winget install -e --id Docker.DockerDesktop
+Write-Output "Checking if WinGet is installed..."
+try
+{
+    winget --version | Out-Null
+    Write-host "WinGet is already installed."
+}
+catch
+{
+    Write-Host "Could not find WinGet. Installing..."
+    Install-WinGet
+}
 
 ## Install Windows Subsystem for Linux
-wsl --install Ubuntu
+Write-Output "Checking if WSL is installed..."
+try
+{
+    wsl --version | Out-Null
+    Write-host "WSL is already installed."
+}
+catch
+{
+    Write-Host "Could not find WSL. Installing..."
+    wsl --install Ubuntu
+}
 wsl --set-default-version 2
 
-# Reloads the system theme by stopping and restarting the explorer process. It starts automatically.
-Stop-Process -processName: explorer
+# Install Apps
+winget install -e --id Microsoft.PowerToys --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id Google.Chrome --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id Docker.DockerDesktop --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id JetBrains.Toolbox --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id Spotify.Spotify --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id Google.Drive --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id Obsidian.Obsidian --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id Discord.Discord --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id TorProject.TorBrowser --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id Figma.Figma --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id 7zip.7zip --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id calibre.calibre --silent --accept-source-agreements --accept-package-agreements
+winget install -e --id SublimeHQ.SublimeText.4 --silent --accept-source-agreements --accept-package-agreements
+
+Write-Output "Finished the setup process. Logging off to apply the changes..."
+Start-Sleep -Seconds 1
+for (($i = 3); $i -gt 0; $i--) {
+    Write-Output "$i"
+    Start-Sleep -Seconds 1
+}
 
 # Logoff and login
 LOGOUT
