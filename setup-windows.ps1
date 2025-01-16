@@ -16,7 +16,6 @@ function Set-Preferences
     $ADVANCED_PATH = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
     $COLORS_PATH = "HKCU:\Control Panel\Colors"
     $DESKTOP_PATH = "HKCU:\Control Panel\Desktop"
-    $PERSONALIZATION_PATH = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
     $GAMEDVR_PATH = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR"
     $SEARCH_PATH = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search"
     $TASKBAND_PATH = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband"
@@ -27,7 +26,6 @@ function Set-Preferences
 
     Set-ItemProperty -Path $THEME_PATH -Name "SystemUsesLightTheme" -Value 0 # Set the system theme to Dark
     Set-ItemProperty -Path $THEME_PATH -Name "AppsUseLightTheme" -Value 0 # Set the app theme to Dark
-    Set-ItemProperty -Path $PERSONALIZATION_PATH -Name 'LockScreenImage' -Value '0 0 0' # Set the lock screen background to a solid color
     Set-ItemProperty -Path $DESKTOP_PATH -Name 'WallPaper' -Value '' # Set the desktop background to a solid color
     Set-ItemProperty -Path $COLORS_PATH -Name 'Background' -Value '0 0 0' # Set the desktop background to a solid color
     Set-ItemProperty -Path $ADVANCED_PATH -Name 'HideIcons' -Value 1 # Hide Desktop Icons
@@ -83,7 +81,7 @@ function Install-Apps
     winget install -e --id Docker.DockerDesktop --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id JetBrains.Toolbox --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Spotify.Spotify --silent --accept-source-agreements --accept-package-agreements
-    winget install -e --id Google.Drive --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Google.GoogleDrive --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Obsidian.Obsidian --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Discord.Discord --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id TorProject.TorBrowser --silent --accept-source-agreements --accept-package-agreements
@@ -131,6 +129,7 @@ catch
 wsl --set-default-version 2
 
 # Install Apps
+Write-Output "Installing apps..."
 Install-Apps
 
 Write-Output "Finished the setup process. Logging off to apply the changes..."
@@ -141,4 +140,4 @@ for ($i = 3; $i -gt 0; $i--) {
 }
 
 # Logoff and login
-LOGOUT
+LOGOFF
