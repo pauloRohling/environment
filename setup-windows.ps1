@@ -36,7 +36,7 @@ function Set-Preferences
     Remove-Item -Path $TASKBAND_PATH -Force -Recurse -ErrorAction SilentlyContinue # Unpin all taskbar icons
     Set-ItemProperty -Path $GAMEDVR_PATH -Name 'AppCaptureEnabled' -Value 0 # Disable Game Overlays
     Set-ItemProperty -Path $ADVANCED_PATH -Name 'Hidden' -Value 1 # Show hidden files and folders
-    Set-ItemProperty -Path $ADVANCED_PATH -Name 'HideFileExt' -Value 1 # Don't hide file extensions
+    Set-ItemProperty -Path $ADVANCED_PATH -Name 'HideFileExt' -Value "0" # Don't hide file extensions
     Set-ItemProperty -Path $CDM_PATH -Name 'ContentDeliveryAllowed' -Value 1
     Set-ItemProperty -Path $CDM_PATH -Name 'RotatingLockScreenEnabled' -Value 1
     Set-ItemProperty -Path $CDM_PATH -Name 'RotatingLockScreenOverlayEnabled' -Value 0
