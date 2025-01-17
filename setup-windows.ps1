@@ -147,7 +147,7 @@ try
 catch
 {
     Write-Host "Could not find WSL. Installing..."
-    wsl --install Ubuntu
+    wsl --install Ubuntu-24.04
 }
 wsl --set-default-version 2
 
