@@ -86,7 +86,6 @@ function Install-Apps
     winget install -e --id Google.Chrome --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Docker.DockerDesktop --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id JetBrains.Toolbox --silent --accept-source-agreements --accept-package-agreements
-    winget install -e --id Spotify.Spotify --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Google.GoogleDrive --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Obsidian.Obsidian --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Discord.Discord --silent --accept-source-agreements --accept-package-agreements
@@ -95,6 +94,7 @@ function Install-Apps
     winget install -e --id 7zip.7zip --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id calibre.calibre --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id SublimeHQ.SublimeText.4 --silent --accept-source-agreements --accept-package-agreements
+    choco install spotify -y
 }
 
 # Interrupt the script if system is not activated
@@ -119,6 +119,11 @@ catch
     Write-Host "Could not find WinGet. Installing..."
     Install-WinGet
 }
+
+# Install Chocolatey
+Set-ExecutionPolicy Bypass -Scope Process -Force
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
 ## Install Windows Subsystem for Linux
 Write-Output "Checking if WSL is installed..."
