@@ -44,6 +44,7 @@ function Set-Preferences
     Set-ItemProperty -Path $CDM_PATH -Name 'SubscribedContent-338389Enabled' -Value 0
     Set-ItemProperty -Path $CDM_PATH -Name 'SubscribedContent-88000326Enabled' -Value 0
     powercfg /change monitor-timeout-ac 0 # Disable monitor timeout
+    powercfg /s SCHEME_MIN # Set to High Performance
 
     # Disable telemetry
     Get-Service DiagTrack | Set-Service -StartupType Disabled
