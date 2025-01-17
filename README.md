@@ -2,6 +2,14 @@
 
 This repository contains scripts to configure my development environment.
 
+## Install Windows
+
+Install Windows 11 using a clean image from [WinUtil](https://github.com/ChrisTitusTech/winutil).
+
+```powershell
+irm "https://christitus.com/win" | iex
+```
+
 ## Activate Windows
 
 Activate Windows using activation scripts from [massgravel/Microsoft-Activation-Scripts](https://github.com/massgravel/Microsoft-Activation-Scripts).
