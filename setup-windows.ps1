@@ -1,7 +1,7 @@
 #Requires -RunAsAdministrator
 
 # Remove the restrictions on PowerShell execution
-Set-ExecutionPolicy Unrestricted
+Set-ExecutionPolicy Unrestricted -Force
 
 # Check if the license is activated
 function Get-IsActivated
@@ -121,7 +121,6 @@ catch
 }
 
 # Install Chocolatey
-Set-ExecutionPolicy Bypass -Scope Process -Force
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
 iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
