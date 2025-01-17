@@ -83,19 +83,21 @@ function Install-WinGet
 # Install Apps
 function Install-Apps
 {
+    choco install spotify -y
     winget install -e --id Microsoft.PowerToys --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Google.Chrome --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Discord.Discord --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Nvidia.GeForceExperience --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Docker.DockerDesktop --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id JetBrains.Toolbox --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Google.GoogleDrive --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Obsidian.Obsidian --silent --accept-source-agreements --accept-package-agreements
-    winget install -e --id Discord.Discord --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id TorProject.TorBrowser --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Figma.Figma --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id 7zip.7zip --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id calibre.calibre --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id SublimeHQ.SublimeText.4 --silent --accept-source-agreements --accept-package-agreements
-    choco install spotify -y
+    winget install -e --id Skillbrains.Lightshot --silent --accept-source-agreements --accept-package-agreements
 }
 
 # Install Fonts
