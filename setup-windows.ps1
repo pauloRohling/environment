@@ -1,7 +1,7 @@
 #Requires -RunAsAdministrator
 
 # Remove the restrictions on PowerShell execution
-Set-ExecutionPolicy Unrestricted -Force
+Set-ExecutionPolicy Unrestricted -Force -ErrorAction SilentlyContinue | Out-Null
 
 # Check if the license is activated
 function Get-IsActivated
@@ -97,6 +97,19 @@ function Install-Apps
     choco install spotify -y
 }
 
+# Install Fonts
+function Install-Fonts
+{
+    $FONT_LIST = Get-ChildItem -Path "./fonts" -Include ('*.fon', '*.otf', '*.ttc', '*.ttf') -Recurse
+    $FONT_PATH = "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
+
+    foreach ($Font in $FONT_LIST)
+    {
+        Copy-Item $Font "C:\Windows\Fonts"
+        New-ItemProperty -Name $Font.BaseName -Path $FONT_PATH -PropertyType string -Value $Font.name -ErrorAction SilentlyContinue | Out-Null
+    }
+}
+
 # Interrupt the script if system is not activated
 if (-not (Get-IsActivated))
 {
@@ -138,16 +151,14 @@ catch
 }
 wsl --set-default-version 2
 
+# Install Fonts
+Write-Host 'Installing fonts...'
+Install-Fonts
+
 # Install Apps
 Write-Output "Installing apps..."
 Install-Apps
 
-Write-Output "Finished the setup process. Logging off to apply the changes..."
-Start-Sleep -Seconds 1
-for ($i = 3; $i -gt 0; $i--) {
-    Write-Output "$i"
-    Start-Sleep -Seconds 1
-}
-
-# Logoff and login
-Write-Output "Done! Please log off and log back in to apply the changes."
+# Finish
+Write-Output "Finished the setup process"
+Write-Output "Please log off and log back in to apply the changes"
