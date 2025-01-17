@@ -56,7 +56,7 @@ function Set-Preferences
     {
         New-Item -Path $Key -Force | Out-Null
     }
-    Set-ItemProperty -Path $Key -Name LockScreenImagePath -value "./wallpaper.png"
+    Set-ItemProperty -Path $Key -Name LockScreenImagePath -value "./wallpapers/wallpaper.png"
 
     # Auto hide the taskbar
     $p = "HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
