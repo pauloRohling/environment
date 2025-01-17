@@ -69,7 +69,6 @@ function Set-Preferences
 function Restart-Explorer
 {
     Stop-Process -processName: explorer
-    Start-Process explorer
 }
 
 ## Install WinGet
