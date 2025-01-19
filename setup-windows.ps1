@@ -99,6 +99,7 @@ function Install-Apps
     winget install -e --id SublimeHQ.SublimeText.4 --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id Skillbrains.Lightshot --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id GlazeWM --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id ModernFlyouts.ModernFlyouts --silent --accept-source-agreements --accept-package-agreements
 }
 
 # Install Fonts
@@ -151,8 +152,9 @@ try
 catch
 {
     Write-Host "Could not find WSL. Installing..."
-    wsl --install Ubuntu-24.04
+    wsl --install
 }
+wsl --install Ubuntu-24.04
 wsl --set-default-version 2
 
 # Install Fonts
