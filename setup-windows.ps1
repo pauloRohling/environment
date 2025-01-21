@@ -100,6 +100,7 @@ function Install-Apps
     winget install -e --id Skillbrains.Lightshot --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id GlazeWM --silent --accept-source-agreements --accept-package-agreements
     winget install -e --id ModernFlyouts.ModernFlyouts --silent --accept-source-agreements --accept-package-agreements
+    winget install -e --id Microsoft.VisualStudioCode --silent --accept-source-agreements --accept-package-agreements
 }
 
 # Install Fonts
