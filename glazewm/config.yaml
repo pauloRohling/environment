@@ -10,8 +10,7 @@ general:
     'focus --workspace 4',
     'shell-exec %ProgramFiles%/Google/Chrome/Application/chrome.exe',
     'shell-exec %AppData%/Spotify/Spotify.exe',
-    'shell-exec %LocalAppData%/Discord/Update
-    .exe',
+    'shell-exec %LocalAppData%/Discord/Update.exe',
     'shell-exec wt'
   ]
 
@@ -162,7 +161,7 @@ window_rules:
       - window_process: { equals: 'zebar' }
 
       - window_process: { regex: "goland|intellij|webstorm|phpstorm|pycharm|datagrip|rubymine|clion" }
-        window_title: { regex: 'Move|Settings|Copy|.*Git.*|Rename|Rollback\sChanges|.*Commit.*|Select.*|.*Line.*' }
+        window_title: { regex: 'Move|Settings|Copy|.*Git.*|Delete|Rename|Rollback\sChanges|.*Commit.*|Select.*|.*Line.*|Data\sSource.*' }
 
       # Ignores picture-in-picture windows for browsers.
       - window_title: { regex: '[Pp]icture.in.[Pp]icture' }
@@ -195,13 +194,13 @@ binding_modes:
 keybindings:
   # Shift focus in a given direction.
   - commands: ['focus --direction left']
-    bindings: ['alt+h', 'alt+left']
+    bindings: ['ctrl+alt+left']
   - commands: ['focus --direction right']
-    bindings: ['alt+l', 'alt+right']
+    bindings: ['ctrl+alt+right']
   - commands: ['focus --direction up']
-    bindings: ['alt+k']
+    bindings: ['ctrl+alt+up']
   - commands: ['focus --direction down']
-    bindings: ['alt+j']
+    bindings: ['ctrl+alt+down']
 
   # Move focused window in a given direction.
   - commands: ['move --direction left']
